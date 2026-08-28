@@ -1,4 +1,4 @@
-[🇮🇷 فارسی](README.md) | [🇬🇧 English](README.en.md) | [🇩🇪 Deutsch](README.de.md)
+[فارسی](README.fa.md) | [English](README.md) | [🇩🇪 Deutsch](README.de.md)
 
 # YouTube downloader Course and playlist
 
