@@ -20,6 +20,7 @@ Ein professioneller YouTube-Kurs-Downloader und -Manager mit Auto-Scheduling-Fun
 
 ### Auto-Downloader (`auto_downloader.py`)
 - **Geplante Downloads**: Automatischer Download ausstehender Kurse zu einer bestimmten Zeit
+- **Interaktive Zeitkonfiguration**: Fragt beim Start nach der Zielzeit (HH:MM)
 - **Nicht-interaktiver Modus**: Perfekt für Übernacht- oder geplante Downloads
 - **Fehlerbehandlung**: Robuste Fehlerbehandlung mit detaillierter Protokollierung
 
@@ -100,9 +101,9 @@ python auto_downloader.py
 ```
 
 **Konfiguration:**
-- Zielzeit: 02:10 (im Skript konfigurierbar)
+- Zielzeit: **Wird interaktiv beim Start abgefragt** (z. B. `02:30` für 2:30 Uhr, `14:00` für 14:00 Uhr)
 - Prüfintervall: 30 Sekunden
-- Lädt automatisch alle ausstehenden Kurse einmal pro Tag herunter
+- Lädt automatisch alle ausstehenden Kurse einmal pro Tag zur angegebenen Zeit herunter
 
 ## Konfiguration
 
@@ -126,8 +127,9 @@ Sie können eine maximale Dateigröße pro Video zur Speicherverwaltung festlege
 
 ### Intelligente Download-Verwaltung
 - Überspringt automatisch bereits heruntergeladene Videos
-- Erkennt vorhandene Dateien durch Titelvergleich
+- Erkennt vorhandene Dateien durch Titelvergleich mit **Fuzzy-Matching-Fallback** (behandelt Unterschiede bei der Dateinamen-Bereinigung)
 - Unterstützt mehrere Videoformate (.mp4, .mkv, .webm, .mov, .avi)
+- **Aktualisiert JSON-Status automatisch nach Downloads** mit korrektem `downloaded`-Status und `downloaded_at`-Zeitstempeln
 
 ### Wiederholungsmechanismus
 - Fehlgeschlagene Videos werden automatisch erneut versucht mit:

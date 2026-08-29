@@ -97,6 +97,20 @@ def safe_filename(name):
     return name[:180]
 
 
+def title_matches_file(basename, safe_title):
+    if not safe_title:
+        return False
+
+    b = basename.lower()
+    if b == safe_title:
+        return True
+
+    if len(safe_title) >= 8 and b.startswith(safe_title):
+        return True
+
+    return False
+
+
 def validate_youtube_url(url):
     if not url or not isinstance(url, str):
         return False
@@ -106,8 +120,11 @@ def validate_youtube_url(url):
     youtube_patterns = [
         r'^https?://(www\.)?youtube\.com/playlist\?list=[\w-]+',
         r'^https?://(www\.)?youtube\.com/watch\?v=[\w-]+',
+        r'^https?://(www\.)?youtube\.com/shorts/[\w-]+',
+        r'^https?://(www\.)?youtube\.com/live/[\w-]+',
+        r'^https?://(www\.)?youtube\.com/(channel|user|c)/[\w-]+',
+        r'^https?://(www\.)?youtube\.com/@[\w.-]+',
         r'^https?://youtu\.be/[\w-]+',
-        r'^https?://(www\.)?youtube\.com/[\w-]+',
     ]
 
     for pattern in youtube_patterns:
@@ -659,6 +676,15 @@ def video_file_exists(folder, title):
         if os.path.exists(path):
             return True
 
+    safe_name = safe_filename(title).lower()
+    try:
+        for f in os.listdir(folder):
+            base = os.path.splitext(f)[0]
+            if title_matches_file(base, safe_name):
+                return True
+    except Exception:
+        pass
+
     return False
 
 
@@ -710,6 +736,13 @@ def count_downloaded_videos(course):
                     downloaded += 1
 
                     break
+            else:
+                safe_name = safe_filename(title).lower()
+                for f in existing_files:
+                    base = os.path.splitext(f)[0]
+                    if title_matches_file(base, safe_name):
+                        downloaded += 1
+                        break
 
     return downloaded
 
@@ -795,7 +828,6 @@ def build_common_ydl_opts(course):
         "referer": "https://www.youtube.com/",
         "sleep_interval": 2,
         "max_sleep_interval": 5,
-        "no_check_certificate": True,
     }, quality
 
 
@@ -894,8 +926,6 @@ def retry_failed_videos(course):
 
                     "no_warnings": True,
 
-                    "no_check_certificate": True,
-
                 }
 
                 try:
@@ -935,33 +965,6 @@ def retry_failed_videos(course):
                     )
 
                     break
-
-                for f in os.listdir(
-                    course["folder"]
-                ):
-
-                    ext = os.path.splitext(
-                        f
-                    )[1].lower()
-
-                    if ext in (
-                        ".mp4",
-                        ".mkv",
-                        ".webm",
-                        ".mov",
-                        ".avi"
-                    ):
-
-                        downloaded = True
-
-                        log(
-                            f"Downloaded: "
-                            f"{video.get('title')} "
-                            f"[{geo}/{fmt}]",
-                            Fore.GREEN
-                        )
-
-                        break
 
                 if downloaded:
                     break
@@ -1047,47 +1050,42 @@ def download_course(course):
 
     retry_failed_videos(course)
 
+    time.sleep(2)
+
     data = load_json(course["json"])
+    media_extensions = {".mp4", ".mkv", ".webm", ".mov", ".avi"}
+    existing_files = set()
+    try:
+        for f in os.listdir(course["folder"]):
+            ext = os.path.splitext(f)[1].lower()
+            if ext in media_extensions:
+                existing_files.add(f)
+    except Exception:
+        pass
+
     for video_id, video in data.get("videos", {}).items():
+        title = video.get("title")
+        if not title:
+            continue
 
-        if video_file_exists(
-            course["folder"],
-            video.get("title")
-        ):
+        filename = safe_filename(title)
+        found = False
 
-            video["downloaded"] = True
+        for ext in media_extensions:
+            if filename + ext in existing_files:
+                found = True
+                break
 
-            video["downloaded_at"] = (
-                datetime.now().isoformat()
-            )
-
-        else:
-
-            for f in os.listdir(
-                course["folder"]
-            ):
-
-                ext = os.path.splitext(
-                    f
-                )[1].lower()
-
-                if ext in (
-
-                    ".mp4",
-                    ".mkv",
-                    ".webm",
-                    ".mov",
-                    ".avi"
-
-                ):
-
-                    video["downloaded"] = True
-
-                    video["downloaded_at"] = (
-                        datetime.now().isoformat()
-                    )
-
+        if not found:
+            safe_name = safe_filename(title).lower()
+            for f in existing_files:
+                if safe_name in f.lower() or f.lower().startswith(safe_name[:50]):
+                    found = True
                     break
+
+        if found:
+            video["downloaded"] = True
+            video["downloaded_at"] = datetime.now().isoformat()
 
     save_json(data, course["json"])
 
@@ -1307,6 +1305,13 @@ def find_courses():
                         downloaded += 1
 
                         break
+                else:
+                    safe_name = safe_filename(video_title).lower()
+                    for f in existing_files:
+                        base = os.path.splitext(f)[0]
+                        if title_matches_file(base, safe_name):
+                            downloaded += 1
+                            break
 
         if total == 0:
             status = "NOT DOWNLOADED"
