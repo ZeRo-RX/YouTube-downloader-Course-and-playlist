@@ -1,3 +1,4 @@
+[🇮🇷 فارسی](README.fa.md) | [English](README.md) | [🇩🇪 Deutsch](README.de.md)
 # YouTube-Kurs-Manager
 
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue)

@@ -1,3 +1,5 @@
+[🇮🇷 فارسی](README.fa.md) | [English](README.md) | [🇩🇪 Deutsch](README.de.md)
+
 # YouTube downloader Course and playlist
 
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue)
