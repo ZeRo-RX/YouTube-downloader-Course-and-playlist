@@ -131,7 +131,8 @@ You can set a maximum file size per video to manage storage:
 - Automatically skips already downloaded videos
 - Detects existing files by title matching with **fuzzy matching fallback** (handles filename sanitization differences)
 - Supports multiple video formats (.mp4, .mkv, .webm, .mov, .avi)
-- **Automatically updates JSON state** after downloads with accurate `downloaded` status and `downloaded_at` timestamps
+- **Incremental JSON state persistence**: saves each video's `downloaded` status and `downloaded_at` timestamp to `playlist_info.json` **immediately after the file finishes downloading**, so progress is never lost — even if the process is interrupted mid-playlist (critical for overnight/auto-scheduled downloads)
+- A final post-download filesystem rescan reconciles any state that was missed during the live hooks
 
 ### Retry Mechanism
 - Failed videos are automatically retried with different:

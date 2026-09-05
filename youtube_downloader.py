@@ -747,7 +747,43 @@ def count_downloaded_videos(course):
     return downloaded
 
 
-def create_progress_hook():
+def mark_video_downloaded(json_path, video_id, video_title):
+    if not video_id and not video_title:
+        return
+
+    with json_lock:
+        data = load_json(json_path)
+        videos = data.get("videos", {})
+        entry = videos.get(video_id) if video_id else None
+
+        if entry is None and video_title:
+            for existing_id, existing_entry in videos.items():
+                if existing_entry.get("title") == video_title:
+                    entry = existing_entry
+                    video_id = existing_id
+                    break
+
+        if entry is None:
+            return
+
+        already = entry.get("downloaded")
+        entry["downloaded"] = True
+        if not already:
+            entry["downloaded_at"] = datetime.now().isoformat()
+        entry["updated"] = datetime.now().isoformat()
+
+        save_json(data, json_path)
+
+        if not already:
+            log(
+                f"State saved: {entry.get('title') or video_id} marked as downloaded.",
+                Fore.GREEN
+            )
+
+
+def create_progress_hook(course=None):
+    json_path = course.get("json") if course else None
+
     def progress_hook(d):
         status = d.get("status")
 
@@ -773,6 +809,15 @@ def create_progress_hook():
         elif status == "finished":
             print()
             log("Download finished.", Fore.GREEN)
+
+            if json_path:
+                info = d.get("info_dict") or {}
+                video_id = info.get("id") or d.get("video_id")
+                video_title = info.get("title") or d.get("filename")
+                if video_title and isinstance(video_title, str):
+                    video_title = os.path.splitext(os.path.basename(video_title))[0]
+
+                mark_video_downloaded(json_path, video_id, video_title)
 
     return progress_hook
 
@@ -815,7 +860,7 @@ def build_common_ydl_opts(course):
         "socket_timeout": SOCKET_TIMEOUT,
         "noplaylist": False,
         "abort_on_error": False,
-        "progress_hooks": [create_progress_hook()],
+        "progress_hooks": [create_progress_hook(course)],
         "quiet": True,
         "no_warnings": True,
         "geo_bypass": True,
@@ -1064,28 +1109,17 @@ def download_course(course):
         pass
 
     for video_id, video in data.get("videos", {}).items():
+        if video.get("downloaded"):
+            continue
+
         title = video.get("title")
         if not title:
             continue
 
-        filename = safe_filename(title)
-        found = False
-
-        for ext in media_extensions:
-            if filename + ext in existing_files:
-                found = True
-                break
-
-        if not found:
-            safe_name = safe_filename(title).lower()
-            for f in existing_files:
-                if safe_name in f.lower() or f.lower().startswith(safe_name[:50]):
-                    found = True
-                    break
-
-        if found:
+        if video_file_exists(course["folder"], title):
             video["downloaded"] = True
             video["downloaded_at"] = datetime.now().isoformat()
+            video["updated"] = video["downloaded_at"]
 
     save_json(data, course["json"])
 
