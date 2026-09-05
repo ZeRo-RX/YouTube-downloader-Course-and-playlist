@@ -10,7 +10,7 @@ A professional-grade YouTube course downloader and manager with auto-scheduling 
 
 ## Features
 
-### Main Downloader (`youtube_downloader.py`)
+### Main Downloader (`src/youtube_downloader/downloader.py`)
 - **Playlist Management**: Add, track, and manage multiple YouTube playlists
 - **Quality Control**: Download up to 1080p with customizable quality settings
 - **Size Limits**: Set maximum file size per video to manage storage
@@ -20,7 +20,7 @@ A professional-grade YouTube course downloader and manager with auto-scheduling 
 - **Threaded Analysis**: Fast playlist analysis using multi-threading
 - **JSON State Management**: Persistent course data and download status
 
-### Auto Downloader (`auto_downloader.py`)
+### Auto Downloader (`src/youtube_downloader/auto_downloader.py`)
 - **Scheduled Downloads**: Automatically download pending courses at a specific time
 - **Interactive Time Configuration**: Prompts for target time (HH:MM) on startup
 - **Non-interactive Mode**: Perfect for overnight or scheduled downloads

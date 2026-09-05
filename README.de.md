@@ -9,7 +9,7 @@ Ein professioneller YouTube-Kurs-Downloader und -Manager mit Auto-Scheduling-Fun
 
 ## Funktionen
 
-### Haupt-Downloader (`youtube_downloader.py`)
+### Haupt-Downloader (`src/youtube_downloader/downloader.py`)
 - **Playlist-Verwaltung**: Hinzufügen, Verfolgen und Verwalten mehrerer YouTube-Playlists
 - **Qualitätskontrolle**: Download bis 1080p mit anpassbaren Qualitätseinstellungen
 - **Größenlimits**: Maximale Dateigröße pro Video zur Speicherverwaltung festlegen
@@ -19,7 +19,7 @@ Ein professioneller YouTube-Kurs-Downloader und -Manager mit Auto-Scheduling-Fun
 - **Threaded-Analyse**: Schnelle Playlist-Analyse mit Multi-Threading
 - **JSON-Zustandsverwaltung**: Dauerhafte Kursdaten und Download-Status
 
-### Auto-Downloader (`auto_downloader.py`)
+### Auto-Downloader (`src/youtube_downloader/auto_downloader.py`)
 - **Geplante Downloads**: Automatischer Download ausstehender Kurse zu einer bestimmten Zeit
 - **Interaktive Zeitkonfiguration**: Fragt beim Start nach der Zielzeit (HH:MM)
 - **Nicht-interaktiver Modus**: Perfekt für Übernacht- oder geplante Downloads
@@ -248,9 +248,27 @@ Beiträge sind willkommen! Bitte zögern Sie nicht, einen Pull Request einzureic
 
 1. Forken Sie das Repository
 2. Erstellen Sie einen Feature-Branch (`git checkout -b feature/AmazingFeature`)
-3. Committen Sie Ihre Änderungen (`git commit -m 'Add some AmazingFeature'`)
-4. Pushen Sie zum Branch (`git push origin feature/AmazingFeature`)
-5. Öffnen Sie einen Pull Request
+3. Installieren Sie die Abhängigkeiten für die Entwicklung: `pip install -r requirements-dev.txt`
+4. Nehmen Sie Ihre Änderungen vor und fügen Sie Tests unter `tests/` hinzu
+5. Führen Sie die Testsuite aus: `pytest`
+6. Committen Sie Ihre Änderungen (`git commit -m 'Add some AmazingFeature'`)
+7. Pushen Sie zum Branch (`git push origin feature/AmazingFeature`)
+8. Öffnen Sie einen Pull Request
+
+### Entwicklung
+
+```bash
+# Installieren mit Entwicklungsextras
+pip install -e ".[dev]"
+
+# Tests mit Coverage ausführen
+pytest --cov=youtube_downloader
+
+# Lint-Prüfung
+flake8 src tests --max-line-length=120
+```
+
+Continuous Integration läuft bei jedem Push und Pull Request über GitHub Actions (`.github/workflows/tests.yml`, `.github/workflows/lint.yml`) für Python 3.8 bis 3.12.
 
 ## Lizenz
 
