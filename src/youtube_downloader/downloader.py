@@ -13,20 +13,21 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import yt_dlp
 from colorama import init, Fore, Style
 
+from .config import (
+    BASE_OUTPUT_DIR,
+    MAX_QUALITY,
+    WORKERS,
+    SOCKET_TIMEOUT,
+    ANALYSIS_RETRIES,
+    DOWNLOAD_RETRIES,
+    FRAGMENT_RETRIES,
+    DEFAULT_QUALITY,
+    DEFAULT_MAX_SIZE_MB,
+    REQUEST_DELAY,
+)
+
 
 init(autoreset=True)
-
-
-BASE_OUTPUT_DIR = "YouTube_Courses"
-MAX_QUALITY = 1080
-WORKERS = 4
-SOCKET_TIMEOUT = 30
-ANALYSIS_RETRIES = 2
-DOWNLOAD_RETRIES = 5
-FRAGMENT_RETRIES = 5
-DEFAULT_QUALITY = "best"
-DEFAULT_MAX_SIZE_MB = None
-REQUEST_DELAY = 1.5
 
 
 json_lock = threading.Lock()

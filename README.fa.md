@@ -28,14 +28,33 @@
 ## ساختار پروژه
 
 ```
-YouTube-Course-Manager/
-├── youtube_downloader.py    # برنامه اصلی با منوی تعاملی
-├── auto_downloader.py       # اسکریپت دانلود خودکار زمان‌بندی شده
-├── YouTube_Courses/         # دایرکتوری دوره‌های دانلود شده
+YouTube-downloader-Course-and-playlist/
+├── src/
+│   └── youtube_downloader/
+│       ├── __init__.py          # رابط عمومی پکیج
+│       ├── __main__.py          # نقطه ورود `python -m youtube_downloader`
+│       ├── downloader.py        # دانلودر اصلی و منوی تعاملی
+│       ├── auto_downloader.py   # اسکریپت دانلود خودکار زمان‌بندی شده
+│       └── config.py            # ثابت‌ها و مسیرهای اشتراکی
+├── data/                        # خروجی زمان اجرا (در gitignore)
 │   └── [نام دوره]/
 │       ├── playlist_info.json
 │       └── *.mp4
-└── README.md
+├── tests/
+│   └── test_downloader.py       # مجموعه تست pytest
+├── docs/                        # مستندات تکمیلی
+├── .github/
+│   └── workflows/
+│       ├── tests.yml            # CI چند نسخه‌ای pytest
+│       └── lint.yml             # بررسی با flake8
+├── pyproject.toml               # پیکربندی ساخت (PEP 621)
+├── setup.py
+├── requirements.txt
+├── requirements-dev.txt
+├── LICENSE
+├── README.md
+├── README.fa.md
+└── README.de.md
 ```
 
 ## نصب
@@ -48,7 +67,13 @@ YouTube-Course-Manager/
 ### نصب وابستگی‌ها
 
 ```bash
-pip install yt-dlp colorama
+pip install -r requirements.txt
+```
+
+یا نصب پروژه به عنوان پکیج (اسکریپت‌های `youtube-downloader` و `youtube-auto-downloader` ثبت می‌شوند):
+
+```bash
+pip install -e .
 ```
 
 ### نصب FFmpeg (اختیاری اما توصیه شده)
@@ -78,7 +103,11 @@ sudo apt update && sudo apt install ffmpeg
 برای مدیریت تعاملی دوره اجرا کنید:
 
 ```bash
-python youtube_downloader.py
+# توصیه شده (از ریشه پروژه)
+python -m youtube_downloader
+
+# یا در صورت نصب به عنوان پکیج
+youtube-downloader
 ```
 
 **گزینه‌های منوی اصلی:**
@@ -98,7 +127,11 @@ python youtube_downloader.py
 دانلود خودکار را در زمان خاص برنامه‌ریزی کنید:
 
 ```bash
-python auto_downloader.py
+# از ریشه پروژه
+python -m youtube_downloader.auto_downloader
+
+# یا در صورت نصب به عنوان پکیج
+youtube-auto-downloader
 ```
 
 **پیکربندی:**
@@ -145,7 +178,7 @@ python auto_downloader.py
 - محاسبه اندازه کل
 
 ### پایداری داده
-تمام داده‌های دوره در `YouTube_Courses/[نام دوره]/playlist_info.json` ذخیره می‌شود:
+تمام داده‌های دوره در `data/[نام دوره]/playlist_info.json` ذخیره می‌شود:
 ```json
 {
   "playlist": {

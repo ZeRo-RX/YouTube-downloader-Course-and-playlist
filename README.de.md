@@ -28,14 +28,33 @@ Ein professioneller YouTube-Kurs-Downloader und -Manager mit Auto-Scheduling-Fun
 ## Projektstruktur
 
 ```
-YouTube-Course-Manager/
-├── youtube_downloader.py    # Hauptanwendung mit interaktivem Menü
-├── auto_downloader.py       # Geplanter Auto-Download-Skript
-├── YouTube_Courses/         # Verzeichnis für heruntergeladene Kurse
+YouTube-downloader-Course-and-playlist/
+├── src/
+│   └── youtube_downloader/
+│       ├── __init__.py          # Öffentliche Paket-API
+│       ├── __main__.py          # Einstiegspunkt `python -m youtube_downloader`
+│       ├── downloader.py        # Kern-Downloader + interaktives Menü
+│       ├── auto_downloader.py   # Geplanter Auto-Download-Skript
+│       └── config.py            # Geteilte Konstanten & Pfade
+├── data/                        # Laufzeit-Ausgabe (in .gitignore)
 │   └── [Kursname]/
 │       ├── playlist_info.json
 │       └── *.mp4
-└── README.md
+├── tests/
+│   └── test_downloader.py       # pytest-Testsuite
+├── docs/                        # Zusätzliche Dokumentation
+├── .github/
+│   └── workflows/
+│       ├── tests.yml            # Multi-Version-pytest-CI
+│       └── lint.yml             # flake8-Linting
+├── pyproject.toml               # Build-Konfiguration (PEP 621)
+├── setup.py
+├── requirements.txt
+├── requirements-dev.txt
+├── LICENSE
+├── README.md
+├── README.fa.md
+└── README.de.md
 ```
 
 ## Installation
@@ -48,7 +67,13 @@ YouTube-Course-Manager/
 ### Abhängigkeiten installieren
 
 ```bash
-pip install yt-dlp colorama
+pip install -r requirements.txt
+```
+
+Oder das Projekt als Paket installieren (registriert die Konsolen-Skripte `youtube-downloader` und `youtube-auto-downloader`):
+
+```bash
+pip install -e .
 ```
 
 ### FFmpeg installieren (Optional aber empfohlen)
@@ -78,7 +103,11 @@ sudo apt update && sudo apt install ffmpeg
 Führen Sie den Haupt-Downloader für die interaktive Kursverwaltung aus:
 
 ```bash
-python youtube_downloader.py
+# Empfohlen (aus dem Projektstamm)
+python -m youtube_downloader
+
+# Oder, falls als Paket installiert
+youtube-downloader
 ```
 
 **Hauptmenü-Optionen:**
@@ -98,7 +127,11 @@ python youtube_downloader.py
 Planen Sie automatische Downloads zu einer bestimmten Zeit:
 
 ```bash
-python auto_downloader.py
+# Aus dem Projektstamm
+python -m youtube_downloader.auto_downloader
+
+# Oder, falls als Paket installiert
+youtube-auto-downloader
 ```
 
 **Konfiguration:**
@@ -145,7 +178,7 @@ Sie können eine maximale Dateigröße pro Video zur Speicherverwaltung festlege
 - Gesamtgrößenberechnung
 
 ### Datenpersistenz
-Alle Kursdaten werden in `YouTube_Courses/[Kursname]/playlist_info.json` gespeichert:
+Alle Kursdaten werden in `data/[Kursname]/playlist_info.json` gespeichert:
 ```json
 {
   "playlist": {

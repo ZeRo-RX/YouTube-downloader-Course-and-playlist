@@ -2,19 +2,10 @@ import sys
 import os
 import time
 import datetime
-import importlib.util
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+from . import downloader
+
 CHECK_INTERVAL = 30
-
-
-def load_youtube_downloader():
-    module_path = os.path.join(BASE_DIR, "youtube_downloader.py")
-    spec = importlib.util.spec_from_file_location("youtube_downloader", module_path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules["youtube_downloader"] = module
-    spec.loader.exec_module(module)
-    return module
 
 
 def get_target_time():
@@ -67,7 +58,6 @@ def main():
     print()
 
     last_ran_date = None
-    yt_module = None
 
     while True:
         try:
@@ -76,13 +66,8 @@ def main():
 
             if should_run_now(target_hour, target_minute) and last_ran_date != current_date:
                 print(f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] Trigger time reached!")
-
-                if yt_module is None:
-                    print("Loading youtube_downloader module...")
-                    yt_module = load_youtube_downloader()
-
                 print("Starting auto download...")
-                yt_module.run_download_all_noninteractive()
+                downloader.run_download_all_noninteractive()
 
                 last_ran_date = current_date
                 print(f"[{now.strftime('%Y-%m-%d %H:%M:%S')}] Auto download completed.")

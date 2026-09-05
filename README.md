@@ -29,14 +29,33 @@ A professional-grade YouTube course downloader and manager with auto-scheduling 
 ## Project Structure
 
 ```
-YouTube-Course-Manager/
-├── youtube_downloader.py    # Main application with interactive menu
-├── auto_downloader.py       # Scheduled auto-download script
-├── YouTube_Courses/         # Downloaded courses directory
+YouTube-downloader-Course-and-playlist/
+├── src/
+│   └── youtube_downloader/
+│       ├── __init__.py          # Public package API
+│       ├── __main__.py          # `python -m youtube_downloader` entry point
+│       ├── downloader.py        # Core downloader + interactive menu
+│       ├── auto_downloader.py   # Scheduled auto-download script
+│       └── config.py            # Shared constants & paths
+├── data/                        # Runtime download output (gitignored)
 │   └── [Course Name]/
 │       ├── playlist_info.json
 │       └── *.mp4
-└── README.md
+├── tests/
+│   └── test_downloader.py       # pytest test suite
+├── docs/                        # Additional documentation
+├── .github/
+│   └── workflows/
+│       ├── tests.yml            # Multi-version pytest CI
+│       └── lint.yml             # flake8 linting
+├── pyproject.toml               # Build configuration (PEP 621)
+├── setup.py
+├── requirements.txt
+├── requirements-dev.txt
+├── LICENSE
+├── README.md
+├── README.fa.md
+└── README.de.md
 ```
 
 ## Installation
@@ -49,7 +68,13 @@ YouTube-Course-Manager/
 ### Install Dependencies
 
 ```bash
-pip install yt-dlp colorama
+pip install -r requirements.txt
+```
+
+Or install the project as a package (registers `youtube-downloader` and `youtube-auto-downloader` console scripts):
+
+```bash
+pip install -e .
 ```
 
 ### Install FFmpeg (Optional but Recommended)
@@ -79,7 +104,11 @@ sudo apt update && sudo apt install ffmpeg
 Run the main downloader for interactive course management:
 
 ```bash
-python youtube_downloader.py
+# Recommended (from project root)
+python -m youtube_downloader
+
+# Or, if installed as a package
+youtube-downloader
 ```
 
 **Main Menu Options:**
@@ -99,7 +128,11 @@ python youtube_downloader.py
 Schedule automatic downloads at a specific time:
 
 ```bash
-python auto_downloader.py
+# From project root
+python -m youtube_downloader.auto_downloader
+
+# Or, if installed as a package
+youtube-auto-downloader
 ```
 
 **Configuration:**
@@ -147,7 +180,7 @@ You can set a maximum file size per video to manage storage:
 - Total size calculation
 
 ### Data Persistence
-All course data is stored in `YouTube_Courses/[Course Name]/playlist_info.json`:
+All course data is stored in `data/[Course Name]/playlist_info.json`:
 ```json
 {
   "playlist": {
@@ -217,9 +250,27 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+3. Install dev dependencies: `pip install -r requirements-dev.txt`
+4. Make your changes and add tests under `tests/`
+5. Run the test suite: `pytest`
+6. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+7. Push to the branch (`git push origin feature/AmazingFeature`)
+8. Open a Pull Request
+
+### Development
+
+```bash
+# Install with dev extras
+pip install -e ".[dev]"
+
+# Run tests with coverage
+pytest --cov=youtube_downloader
+
+# Lint
+flake8 src tests --max-line-length=120
+```
+
+Continuous Integration runs on every push and pull request via GitHub Actions (`.github/workflows/tests.yml`, `.github/workflows/lint.yml`) across Python 3.8 – 3.12.
 
 ## License
 
